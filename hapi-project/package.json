@@ -1,0 +1,25 @@
+{
+  "name": "hapi-project",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "./node_modules/nodemon/bin/nodemon.js ./dist/backend.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/hapi": "^18.0.0",
+    "@types/node": "^10.12.19",
+    "bookshelf": "^0.14.2",
+    "hapi": "^18.0.0",
+    "knex": "^0.16.3",
+    "pg": "^7.8.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.18.9",
+    "typescript": "^3.2.4"
+  }
+}
