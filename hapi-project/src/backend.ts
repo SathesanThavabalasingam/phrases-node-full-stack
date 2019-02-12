@@ -108,7 +108,7 @@ server.route({
           }
         }
       // delete DB row according to requested id 
-      var deleteEntry = new Phrases({id: request.params.id}).fetch({requre: true})
+      var deleteEntry = new Phrases({id: request.params.id}).fetch({require: true})
         .then(function(entry) {
           console.log(entry);
           entry.destroy()
