@@ -10,7 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const hapi = require("hapi");
 const fs = require("fs");
-const Phrases = require("../models/phrase"); // Import the Author Model
+const Phrases = require("../models/phrase"); // Import the phrase Model
 const server = new hapi.Server({
     host: 'localhost',
     port: 8080
@@ -20,8 +20,7 @@ server.route({
     method: 'POST',
     path: '/write',
     handler: function (request, h) {
-        const data = request.payload;
-        const result = data["phrase"] + '\n';
+        // ping DB to check connection and stop if fail
         var checkDB = new Phrases().fetchAll;
         if (checkDB == null) {
             console.log('Warning. Database not connected');
@@ -30,18 +29,23 @@ server.route({
         else {
             console.log('Connection established...');
         }
+        // req post and append to new line
+        const data = request.payload;
+        const result = data["phrase"] + '\n';
         fs.appendFile('storage.txt', result, (err) => {
             if (err) {
                 console.error(err);
                 return;
             }
         });
+        // read out updated storage.txt and print line num
         var fileBuffer = fs.readFileSync('storage.txt');
         var to_string = fileBuffer.toString();
         var split_lines = to_string.split("\n");
         var linenum = {
-            id: split_lines.length - 1
+            id: split_lines.length //changed this
         };
+        // update phrases table in DB with new entry
         var entry = new Phrases({ phrase: data["phrase"] });
         entry.save();
         return linenum;
@@ -52,6 +56,7 @@ server.route({
     method: 'GET',
     path: '/read',
     handler: function (request, h) {
+        // ping DB to check connection and stop if fail
         var checkDB = new Phrases().fetchAll;
         if (checkDB == null) {
             console.log('Warning. Database not connected');
@@ -60,6 +65,7 @@ server.route({
         else {
             console.log('Connection established...');
         }
+        // read out storage.txt and display in return JSON obj
         var fs = require('fs');
         var phrases = [];
         var array = fs.readFileSync('storage.txt').toString().split("\n");
@@ -80,6 +86,7 @@ server.route({
     method: 'DELETE',
     path: '/delete/{id}',
     handler: function (request, h) {
+        // ping DB to check connection and stop if fail
         var checkDB = new Phrases().fetchAll;
         if (checkDB == null) {
             console.log('Warning. Database not connected');
@@ -88,11 +95,13 @@ server.route({
         else {
             console.log('Connection established...');
         }
+        // read out storage.txt to get length
         var fs = require('fs');
         var array = fs.readFileSync('storage.txt').toString().split("\n");
         var len = array.length;
+        // delete entry from storage.txt if within length
         if (request.params.id <= len) {
-            array.splice(request.params.id);
+            array.splice(Number(request.params.id) - 1, 1);
             const updatedData = array.join('\n');
             fs.writeFile('storage.txt', updatedData, (err) => {
                 if (err)
@@ -108,7 +117,8 @@ server.route({
                 success: false
             };
         }
-        var deleteEntry = new Phrases({ id: request.params.id }).fetch({ requre: true })
+        // delete DB row according to requested id
+        var deleteEntry = new Phrases({ id: request.params.id }).fetch({ require: true })
             .then(function (entry) {
             console.log(entry);
             entry.destroy();
