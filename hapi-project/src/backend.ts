@@ -35,7 +35,7 @@ server.route({
       var to_string = fileBuffer.toString();
       var split_lines = to_string.split("\n");
       var linenum = {
-        id: split_lines.length-1
+        id: split_lines.length//changed this
       }
       // update phrases table in DB with new entry
       var entry = new Phrases({phrase: data["phrase"]});
@@ -93,7 +93,7 @@ server.route({
       var len = array.length;
       // delete entry from storage.txt if within length
       if (request.params.id <= len){
-        array.splice(request.params.id)
+        array.splice(Number(request.params.id)-1,1)
         const updatedData = array.join('\n');
         fs.writeFile('storage.txt', updatedData, (err) => {
             if (err) throw err;
@@ -107,8 +107,8 @@ server.route({
             success: false
           }
         }
-      // delete DB row according to requested id 
-      var deleteEntry = new Phrases({id: request.params.id}).fetch({require: true})
+      // delete DB row according to requested id
+      var deleteEntry = new Phrases({id:request.params.id}).fetch({require: true})
         .then(function(entry) {
           console.log(entry);
           entry.destroy()
